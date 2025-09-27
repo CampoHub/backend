@@ -11,6 +11,7 @@
 2. **Copia el archivo `.env` si no existe:**
 ```bash
     cp .env.example .env
+```
 
 3. **Levanta los servicios con Docker Compose:**
 	```bash
