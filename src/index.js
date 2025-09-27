@@ -7,16 +7,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas
-app.use("/auth", require("./routes/auth.routes"));
+const port = process.env.PORT || 3000;
+const authRouter = require('./routes/auth.routes.js');
+
+app.get("/", (req, res) => {
+  res.json({ message: "API del campo funcionando 🚜" });
+});
+
+app.use('/auth', authRouter);
 app.use("/users", require("./routes/users.routes"));
 app.use("/plots", require("./routes/plots.routes"));
 app.use("/activities", require("./routes/activities.routes"));
 app.use("/resources", require("./routes/resources.routes"));
 app.use("/workers", require("./routes/workers.routes"));
 
-const PORT = process.env.PORT || 3000;
-
-sequelize.sync({ alter: true }).then(() => {
-  app.listen(PORT, () => console.log(`🚀 API corriendo en puerto ${PORT}`));
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
 });
+
+sequelize.sync({ alter: true })
+  .then(() => {
+    app.listen(port, () => console.log(`🚀 Servidor en puerto ${port}`));
+  })
+  .catch(err => console.error("❌ Error DB:", err));

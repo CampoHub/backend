@@ -10,7 +10,7 @@ services:
       MYSQL_USER: campo_user
       MYSQL_PASSWORD: campopass
     ports:
-      - "3306:3306"
+      - "3320:3306"
     volumes:
       - db_data:/var/lib/mysql
 

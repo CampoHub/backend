@@ -11,12 +11,16 @@ const Activity = sequelize.define("Activity", {
     type: DataTypes.ENUM("pendiente", "en progreso", "completada"),
     defaultValue: "pendiente"
   },
+  id_parcela: { // Añadimos la definición explícita aquí
+    type: DataTypes.INTEGER,
+    allowNull: true // Permitimos NULL para ser consistente con la migración
+  }
 }, {
   tableName: "activities",
   timestamps: true,
 });
 
-Plot.hasMany(Activity, { foreignKey: "id_parcela" });
+Plot.hasMany(Activity, { foreignKey: "id_parcela", onDelete: 'SET NULL' });
 Activity.belongsTo(Plot, { foreignKey: "id_parcela" });
 
 module.exports = Activity;
