@@ -6,14 +6,12 @@ const crypto = require('crypto');
 
 const register = async (req, res) => {
   try {
-    console.log(req.body);
     const request = req.body;
     const nombre = request.name;
     const correo = request.email;
     const contraseña = request.password;
     const rol = request.rol || 'trabajador';
 
-    // Validación de datos requeridos
     if (!nombre || !correo || !contraseña) {
       return res.status(400).json({
         message: 'Datos incompletos',
@@ -26,7 +24,6 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'El usuario ya existe' });
     }
 
-    // Aseguramos que la contraseña no sea undefined y sea una cadena
     const passwordToHash = String(contraseña);
     const hashedPassword = await bcrypt.hash(passwordToHash, 10);
 
@@ -38,7 +35,6 @@ const register = async (req, res) => {
       is_active: true
     });
 
-    // No devolvemos la contraseña en la respuesta
     const userResponse = {
       id: newUser.id,
       nombre: newUser.nombre,
@@ -55,7 +51,10 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    const { correo, contraseña } = req.body
+    const request = req.body;
+    const correo = request.email;
+    const contraseña = request.password;
+
     try {
         const userExist = await User.findOne({ where: { correo } })
 
