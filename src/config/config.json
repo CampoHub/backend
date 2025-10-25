@@ -5,7 +5,7 @@
     "database": "campo_db",
     "host": "host.docker.internal",
     "dialect": "mysql",
-    "port": 3320
+    "port": 3306
   },
   "test": {
     "username": "root",

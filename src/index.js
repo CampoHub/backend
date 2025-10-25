@@ -18,6 +18,7 @@ app.use('/auth', authRouter);
 app.use("/users", require("./routes/users.routes"));
 app.use("/plots", require("./routes/plots.routes"));
 app.use("/activities", require("./routes/activities.routes"));
+app.use("/trabajadores", require("./routes/workers.routes"));
 app.use("/resources", require("./routes/resources.routes"));
 app.use("/workers", require("./routes/workers.routes"));
 
