@@ -21,13 +21,15 @@ app.use("/activities", require("./routes/activities.routes"));
 app.use("/trabajadores", require("./routes/workers.routes"));
 app.use("/resources", require("./routes/resources.routes"));
 app.use("/workers", require("./routes/workers.routes"));
+app.use("/assignments", require("./routes/assignments.routes"));
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
-
-sequelize.sync({ alter: true })
+sequelize.authenticate()
   .then(() => {
-    app.listen(port, () => console.log(`🚀 Servidor en puerto ${port}`));
+    console.log('✅ Conexión a la base de datos establecida correctamente.');
+    app.listen(port, () => {
+      console.log(`🚀 Servidor ejecutándose en http://localhost:${port}`);
+    });
   })
-  .catch(err => console.error("❌ Error DB:", err));
+  .catch(err => {
+    console.error('❌ Error al conectar con la base de datos:', err);
+  });

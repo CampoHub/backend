@@ -3,7 +3,7 @@
     "username": "campo_user",
     "password": "campopass",
     "database": "campo_db",
-    "host": "host.docker.internal",
+    "host": "db",
     "dialect": "mysql",
     "port": 3306
   },

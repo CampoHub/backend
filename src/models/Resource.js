@@ -1,8 +1,13 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-const Plot = require("./Plot");
+const { Model, DataTypes } = require("sequelize");
 
-const Resource = sequelize.define("Resource", {
+module.exports = (sequelize) => {
+  class Resource extends Model {
+    static associate(models) {
+      Resource.belongsTo(models.Plot, { foreignKey: "id_parcela" });
+    }
+  }
+
+  Resource.init({
   tipo: { type: DataTypes.STRING, allowNull: false },
   cantidad: { type: DataTypes.INTEGER, allowNull: false },
   disponible: { type: DataTypes.BOOLEAN, defaultValue: true },
@@ -10,12 +15,12 @@ const Resource = sequelize.define("Resource", {
     type: DataTypes.INTEGER,
     allowNull: true // Permitimos NULL para ser consistente con la migración
   }
-}, {
-  tableName: "resources",
-  timestamps: true,
-});
+  }, {
+    sequelize,
+    tableName: "resources",
+    timestamps: true,
+    modelName: 'Resource'
+  });
 
-Plot.hasMany(Resource, { foreignKey: "id_parcela", onDelete: 'SET NULL' });
-Resource.belongsTo(Plot, { foreignKey: "id_parcela" });
-
-module.exports = Resource;
+  return Resource;
+};

@@ -1,8 +1,26 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-const Plot = require("./Plot");
+const { Model, DataTypes } = require("sequelize");
 
-const Activity = sequelize.define("Activity", {
+module.exports = (sequelize) => {
+  class Activity extends Model {
+  static associate(models) {
+    // Asociaciones con Plot
+    Activity.belongsTo(models.Plot, { foreignKey: "id_parcela" });
+    
+    // Asociación con ActivityAssignment
+    Activity.hasMany(models.ActivityAssignment, {
+      foreignKey: 'activity_id',
+      as: 'assignments'
+    });
+
+    // Asociación con ActivityResource
+    Activity.hasMany(models.ActivityResource, {
+      foreignKey: 'activity_id',
+      as: 'resources'
+    });
+  }
+}
+
+Activity.init({
   nombre: { type: DataTypes.STRING, allowNull: false },
   tipo: { type: DataTypes.STRING, allowNull: false },
   fecha_inicio: { type: DataTypes.DATE, allowNull: false },
@@ -11,16 +29,16 @@ const Activity = sequelize.define("Activity", {
     type: DataTypes.ENUM("pendiente", "en progreso", "completada"),
     defaultValue: "pendiente"
   },
-  id_parcela: { // Añadimos la definición explícita aquí
+  id_parcela: {
     type: DataTypes.INTEGER,
-    allowNull: true // Permitimos NULL para ser consistente con la migración
+    allowNull: true
   }
 }, {
+  sequelize,
+  modelName: "Activity",
   tableName: "activities",
-  timestamps: true,
-});
+  timestamps: true
+  });
 
-Plot.hasMany(Activity, { foreignKey: "id_parcela", onDelete: 'SET NULL' });
-Activity.belongsTo(Plot, { foreignKey: "id_parcela" });
-
-module.exports = Activity;
+  return Activity;
+};
