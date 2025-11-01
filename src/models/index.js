@@ -6,7 +6,6 @@ const sequelize = require("../config/database");
 const basename = path.basename(__filename);
 const db = {};
 
-// Importar todos los modelos del directorio actual
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -21,7 +20,6 @@ fs
     db[model.name] = model;
   });
 
-// Ejecutar el método associate si existe
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

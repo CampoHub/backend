@@ -1,7 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 
-// Obtener todas las asignaciones
 exports.getAll = async (req, res) => {
   try {
     console.log('Intentando obtener asignaciones...');
@@ -19,7 +18,7 @@ exports.getAll = async (req, res) => {
         }
       ],
       attributes: [
-        'id', 
+        'id',
         'activity_id',
         'worker_id',
         'start_date',
@@ -31,7 +30,6 @@ exports.getAll = async (req, res) => {
 
     console.log('Asignaciones obtenidas:', assignments);
 
-    // Transformar los datos para el formato que espera el frontend
     const formattedAssignments = assignments.map(assignment => ({
       id: assignment.id,
       activityId: assignment.activity_id,
@@ -52,7 +50,6 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// Obtener asignaciones por actividad
 exports.getByActivity = async (req, res) => {
   try {
     const { activityId } = req.params;
@@ -72,7 +69,6 @@ exports.getByActivity = async (req, res) => {
   }
 };
 
-// Crear una nueva asignación
 exports.create = async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
@@ -96,7 +92,6 @@ exports.create = async (req, res) => {
   }
 };
 
-// Actualizar una asignación
 exports.update = async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,7 +107,6 @@ exports.update = async (req, res) => {
   }
 };
 
-// Eliminar una asignación
 exports.delete = async (req, res) => {
   try {
     const { id } = req.params;

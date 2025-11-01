@@ -4,7 +4,6 @@ const activityAssignmentController = require('../controllers/activity-assignment
 const { authenticateToken } = require('../middlewares/auth');
 const { checkRole } = require('../middlewares/roles');
 
-// GET /activities/:activityId/assignments
 router.get(
   '/:activityId/assignments',
   authenticateToken,
@@ -12,7 +11,6 @@ router.get(
   activityAssignmentController.getAssignments
 );
 
-// POST /activities/:activityId/assignments
 router.post(
   '/:activityId/assignments',
   authenticateToken,
@@ -20,7 +18,6 @@ router.post(
   activityAssignmentController.createAssignment
 );
 
-// PUT /activity-assignments/:id/unassign
 router.put(
   '/assignments/:id/unassign',
   authenticateToken,
@@ -28,7 +25,6 @@ router.put(
   activityAssignmentController.unassignWorker
 );
 
-// DELETE /activity-assignments/:id
 router.delete(
   '/assignments/:id',
   authenticateToken,

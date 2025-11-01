@@ -2,7 +2,7 @@ const { ActivityResource, Resource, Activity } = require('../models');
 const { Op } = require('sequelize');
 
 const activityResourceController = {
-  // GET /activities/:activityId/resources
+
   async getActivityResources(req, res) {
     try {
       const { activityId } = req.params;
@@ -40,19 +40,16 @@ const activityResourceController = {
     }
   },
 
-  // POST /activities/:activityId/resources
   async assignResource(req, res) {
     try {
       const { activityId } = req.params;
       const { resource_id, cantidad } = req.body;
 
-      // Verificar que la actividad existe
       const activity = await Activity.findByPk(activityId);
       if (!activity) {
         return res.status(404).json({ message: 'Actividad no encontrada' });
       }
 
-      // Verificar que el recurso existe y hay suficiente cantidad
       const resource = await Resource.findByPk(resource_id);
       if (!resource) {
         return res.status(404).json({ message: 'Recurso no encontrado' });
@@ -64,7 +61,6 @@ const activityResourceController = {
         });
       }
 
-      // Crear la asignación del recurso
       const activityResource = await ActivityResource.create({
         activity_id: activityId,
         resource_id,
@@ -79,7 +75,6 @@ const activityResourceController = {
     }
   },
 
-  // PUT /activity-resources/:id/status
   async updateResourceStatus(req, res) {
     try {
       const { id } = req.params;
@@ -90,7 +85,6 @@ const activityResourceController = {
         return res.status(404).json({ message: 'Asignación de recurso no encontrada' });
       }
 
-      // Actualizar estado y fecha de devolución si corresponde
       if (estado === 'devuelto' && !fecha_devolucion) {
         await activityResource.update({
           estado,
@@ -107,7 +101,6 @@ const activityResourceController = {
     }
   },
 
-  // DELETE /activity-resources/:id
   async removeResource(req, res) {
     try {
       const { id } = req.params;
@@ -117,14 +110,12 @@ const activityResourceController = {
         return res.status(404).json({ message: 'Asignación de recurso no encontrada' });
       }
 
-      // Solo permitir eliminar si está en estado pendiente
       if (activityResource.estado !== 'pendiente') {
         return res.status(400).json({ 
           message: 'No se puede eliminar un recurso que está en uso o ya fue devuelto' 
         });
       }
 
-      // Restaurar la cantidad al recurso antes de eliminar
       const resource = await Resource.findByPk(activityResource.resource_id);
       if (resource) {
         await resource.increment('cantidad_disponible', { 

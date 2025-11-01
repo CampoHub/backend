@@ -2,10 +2,8 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Primero eliminamos la tabla si existe
     await queryInterface.dropTable('activity_assignments');
 
-    // Luego creamos la tabla con la estructura correcta
     await queryInterface.createTable('activity_assignments', {
       id: {
         type: Sequelize.INTEGER,
@@ -63,7 +61,6 @@ module.exports = {
       }
     });
 
-    // Añadimos los índices necesarios
     await queryInterface.addIndex('activity_assignments', ['activity_id', 'worker_id'], {
       name: 'idx_activity_worker'
     });

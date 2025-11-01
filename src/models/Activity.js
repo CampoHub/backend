@@ -3,16 +3,14 @@ const { Model, DataTypes } = require("sequelize");
 module.exports = (sequelize) => {
   class Activity extends Model {
   static associate(models) {
-    // Asociaciones con Plot
+
     Activity.belongsTo(models.Plot, { foreignKey: "id_parcela" });
     
-    // Asociación con ActivityAssignment
     Activity.hasMany(models.ActivityAssignment, {
       foreignKey: 'activity_id',
       as: 'assignments'
     });
 
-    // Asociación con ActivityResource
     Activity.hasMany(models.ActivityResource, {
       foreignKey: 'activity_id',
       as: 'resources'
