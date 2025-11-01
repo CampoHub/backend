@@ -1,16 +1,31 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-const User = require("./User");
+const { Model, DataTypes } = require("sequelize");
 
-const Worker = sequelize.define("Worker", {
-  especialidad: { type: DataTypes.STRING, allowNull: false },
-  activo: { type: DataTypes.BOOLEAN, defaultValue: true },
-}, {
-  tableName: "workers",
-  timestamps: true,
-});
+module.exports = (sequelize) => {
+  class Worker extends Model {
+    static associate(models) {
+      Worker.belongsTo(models.User, { foreignKey: "id_usuario" });
+      models.User.hasOne(Worker, { foreignKey: "id_usuario" });
+    }
+  }
 
-User.hasOne(Worker, { foreignKey: "id_usuario" });
-Worker.belongsTo(User, { foreignKey: "id_usuario" });
+  Worker.init(
+    {
+      especialidad: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      activo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Worker",
+      tableName: "workers",
+      timestamps: true,
+    }
+  );
 
-module.exports = Worker;
+  return Worker;
+};
