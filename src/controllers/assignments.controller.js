@@ -3,7 +3,6 @@ const { Op } = require("sequelize");
 
 exports.getAll = async (req, res) => {
   try {
-    console.log('Intentando obtener asignaciones...');
     const assignments = await db.ActivityAssignment.findAll({
       include: [
         {
@@ -28,8 +27,6 @@ exports.getAll = async (req, res) => {
       ]
     });
 
-    console.log('Asignaciones obtenidas:', assignments);
-
     const formattedAssignments = assignments.map(assignment => ({
       id: assignment.id,
       activityId: assignment.activity_id,
@@ -42,10 +39,8 @@ exports.getAll = async (req, res) => {
       worker: assignment.worker
     }));
 
-    console.log('Asignaciones formateadas:', formattedAssignments);
     res.json(formattedAssignments);
   } catch (error) {
-    console.error('Error al obtener las asignaciones:', error);
     res.status(500).json({ message: "Error al obtener las asignaciones", error: error.message });
   }
 };
@@ -54,7 +49,7 @@ exports.getByActivity = async (req, res) => {
   try {
     const { activityId } = req.params;
     const assignments = await db.ActivityAssignment.findAll({
-      where: { activityId },
+      where: { activity_id: activityId },
       include: [
         {
           model: db.Worker,
@@ -64,14 +59,12 @@ exports.getByActivity = async (req, res) => {
     });
     res.json(assignments);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error al obtener las asignaciones" });
   }
 };
 
 exports.create = async (req, res) => {
   try {
-    console.log('Datos recibidos:', req.body);
     const assignment = await db.ActivityAssignment.create({
       activity_id: req.body.activity_id,
       worker_id: req.body.worker_id,
@@ -80,10 +73,8 @@ exports.create = async (req, res) => {
       status: req.body.status,
       rol: req.body.rol
     });
-    console.log('Asignación creada:', assignment);
     res.status(201).json(assignment);
   } catch (error) {
-    console.error('Error al crear la asignación:', error);
     res.status(500).json({ 
       message: "Error al crear la asignación",
       error: error.message,
@@ -96,14 +87,23 @@ exports.update = async (req, res) => {
   try {
     const { id } = req.params;
     const assignment = await db.ActivityAssignment.findByPk(id);
-    if (!assignment) {
-      return res.status(404).json({ message: "Asignación no encontrada" });
-    }
+    if (!assignment) return res.status(404).json({ message: "Asignación no encontrada" });
     await assignment.update(req.body);
     res.json(assignment);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error al actualizar la asignación" });
+  }
+};
+
+exports.unassign = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const assignment = await db.ActivityAssignment.findByPk(id);
+    if (!assignment) return res.status(404).json({ message: "Asignación no encontrada" });
+    await assignment.update({ status: "no_asignado" });
+    res.json(assignment);
+  } catch (error) {
+    res.status(500).json({ message: "Error al desasignar" });
   }
 };
 
@@ -111,13 +111,11 @@ exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
     const assignment = await db.ActivityAssignment.findByPk(id);
-    if (!assignment) {
-      return res.status(404).json({ message: "Asignación no encontrada" });
-    }
+    if (!assignment) return res.status(404).json({ message: "Asignación no encontrada" });
     await assignment.destroy();
     res.json({ message: "Asignación eliminada correctamente" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error al eliminar la asignación" });
   }
 };
+

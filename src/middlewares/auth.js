@@ -1,14 +1,17 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = function (req, res, next) {
-  const token = req.headers["authorization"];
-  if (!token) return res.status(401).json({ error: "Token requerido" });
-
+  const h = req.headers["authorization"];
+  if (!h) return res.status(401).json({ error: "Token requerido" });
   try {
-    const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
-    req.user = decoded;
+    const decoded = jwt.verify(h.split(" ")[1], process.env.JWT_SECRET);
+    const u = decoded.user || decoded;
+    req.user = {
+      sub: u.id || decoded.sub,
+      role: u.rol || u.role,
+    };
     next();
-  } catch (err) {
-    res.status(401).json({ error: "Token inválido" });
+  } catch (e) {
+    return res.status(401).json({ error: "Token invalido" });
   }
 };
