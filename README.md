@@ -25,7 +25,19 @@
 	```
 
 ## 🗄️ Crear la base de datos y las tablas
-No necesitas crear la base de datos ni las tablas manualmente. Al correr el seed, Sequelize se encarga de sincronizar el modelo y crear todo automáticamente.
+No necesitas crear la base de datos ni las tablas manualmente. Al levantar el proyecto con Docker Compose:
+
+1. Se esperará a que la base de datos esté lista (healthcheck)
+2. Se ejecutarán automáticamente las migraciones
+3. Las tablas se crearán con la estructura más reciente
+
+Si necesitas ejecutar las migraciones manualmente, puedes usar:
+```bash
+docker compose exec backend npx sequelize-cli db:migrate \
+  --config src/config/database.js \
+  --migrations-path src/migrations \
+  --models-path src/models
+```
 
 ## 🌱 Cargar datos iniciales (seed)
 
