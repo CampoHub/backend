@@ -3,9 +3,10 @@ const { User } = require("../models");
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id, {
-      attributes: ['id', 'nombre', 'correo', 'rol']
+    const user = await User.findByPk(req.user.sub, {
+        attributes: ['id', 'nombre', 'correo', 'rol']
     });
+
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -23,7 +24,8 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id);
+    const user = await User.findByPk(req.user.sub);
+
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -59,8 +61,8 @@ exports.updateProfile = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const user = await User.findByPk(req.user.id);
-    
+const user = await User.findByPk(req.user.sub);
+
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
