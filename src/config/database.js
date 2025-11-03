@@ -1,16 +1,20 @@
-const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD, // Cambiado de DB_PASS a DB_PASSWORD para coincidir con el .env
-  {
+module.exports = {
+  development: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: "mysql",
-    logging: false,
+    dialect: "mysql"
+  },
+  production: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: "mysql"
   }
-);
-
-module.exports = sequelize;
-
+};
