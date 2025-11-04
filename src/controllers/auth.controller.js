@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
 const crypto = require("crypto");
+const { sendEmail } = require("../utils/email");
 
 const register = async (req, res) => {
   try {
@@ -61,11 +62,84 @@ const login = async (req, res) => {
 const resetTokens = new Map();
 
 const forgotPassword = async (req, res) => {
-  res.status(500).json({ message: "no implementado" });
+  try {
+    console.log('Iniciando proceso de recuperación de contraseña');
+    const { correo } = req.body;
+    console.log('Correo recibido:', correo);
+    
+    // Verificar que el usuario existe
+    console.log('Buscando usuario en la base de datos...');
+    const user = await User.findOne({ where: { correo } });
+    if (!user) {
+      console.log('Usuario no encontrado');
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    console.log('Usuario encontrado:', user.id);
+
+    // Generar token único
+    console.log('Generando token de recuperación...');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expirationTime = Date.now() + 3600000; // 1 hora de validez
+    console.log('Token generado:', resetToken);
+
+    // Almacenar token con tiempo de expiración
+    resetTokens.set(resetToken, {
+      userId: user.id,
+      expiresAt: expirationTime
+    });
+
+    // Crear enlace de recuperación
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+    // Enviar correo
+    await sendEmail({
+      to: correo,
+      subject: "Recuperación de Contraseña",
+      html: `
+        <h1>Recuperación de Contraseña</h1>
+        <p>Has solicitado restablecer tu contraseña.</p>
+        <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
+        <a href="${resetLink}">Restablecer Contraseña</a>
+        <p>Este enlace es válido por 1 hora.</p>
+        <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+      `
+    });
+
+    res.json({ message: "Se ha enviado un correo con las instrucciones para restablecer tu contraseña" });
+  } catch (error) {
+    console.error('Error en forgotPassword:', error);
+    res.status(500).json({ message: "Error al procesar la solicitud de recuperación de contraseña" });
+  }
 };
 
 const resetPassword = async (req, res) => {
-  res.status(500).json({ message: "no implementado" });
+  try {
+    const { token, nuevaContraseña } = req.body;
+
+    // Verificar que el token existe y no ha expirado
+    const resetData = resetTokens.get(token);
+    if (!resetData || Date.now() > resetData.expiresAt) {
+      return res.status(400).json({ message: "Token inválido o expirado" });
+    }
+
+    // Obtener usuario
+    const user = await User.findByPk(resetData.userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Actualizar contraseña
+    const hashedPassword = await bcrypt.hash(String(nuevaContraseña), 10);
+    await user.update({ contraseña: hashedPassword });
+
+    // Eliminar token usado
+    resetTokens.delete(token);
+
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error('Error en resetPassword:', error);
+    res.status(500).json({ message: "Error al restablecer la contraseña" });
+  }
 };
 
 const profile = async (req, res) => {
