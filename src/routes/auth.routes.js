@@ -11,8 +11,8 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
-router.post('/forgotPassword', forgotPassword);
-router.post('/resetPassword', resetPassword);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 router.get("/profile", auth, profile);
 
 module.exports = router;
