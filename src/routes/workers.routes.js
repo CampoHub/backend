@@ -4,7 +4,7 @@ const ctrl = require("../controllers/workers.controller");
 const auth = require("../middlewares/auth");
 const checkRole = require("../middlewares/roles");
 
-router.get("/", auth, checkRole("admin", "gestor"), ctrl.getAll);
+router.get("/", auth, checkRole("admin", "gestor", "trabajador"), ctrl.getAll);
 
 router.post("/", auth, checkRole("admin"), ctrl.create);
 
