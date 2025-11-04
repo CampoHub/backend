@@ -1,8 +1,12 @@
-const { Resource, Plot } = require("../models");
+
+const db = require("../models");
+const Resource = db.Resource;
+const Plot = db.Plot;
+
 
 exports.getAll = async (req, res) => {
   try {
-    const resources = await Resource.findAll({ include: Plot });
+    const resources = await Resource.findAll({ include: [{ model: Plot }] });
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: "Error listando recursos" });
